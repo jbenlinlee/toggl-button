@@ -8,15 +8,31 @@
 
   function createTimerLink(task) {
     var link = createLink('toggl-button asana');
+    var tid = /app.asana.com\/\d+\/\d+\/(\d+)/.exec(window.location.href)[1];
+
     link.addEventListener("click", function (e) {
-      chrome.extension.sendMessage({
-        type: 'timeEntry',
-        description: task,
-        projectId: selectedProjectId,
-        billable: selectedProjectBillable
-      });
-      link.innerHTML = "Started...";
-      return false;
+		// Get tags and then create time entry
+		var xhr = new XMLHttpRequest();
+      xhr.open("GET", 'https://app.asana.com/api/1.0/tasks/' + tid + '/tags')
+      xhr.onload = function() {
+         if (xhr.status === 200) {
+            var resp = JSON.parse(xhr.responseText);
+            var tags = resp.data.map(function(e) { return e.name; });
+		
+            chrome.extension.sendMessage({
+              type: 'timeEntry',
+              description: task,
+              projectId: selectedProjectId,
+              billable: selectedProjectBillable,
+              tags: tags
+            });
+
+            link.innerHTML = "Started...";
+            return false;
+         }
+      }
+      xhr.send();
+
     });
     return link;
   }
