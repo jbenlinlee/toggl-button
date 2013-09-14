@@ -37,7 +37,8 @@ var TogglButton = {
           wid: TogglButton.$user.default_wid,
           pid: timeEntry.projectId || null,
           billable: timeEntry.billable || false,
-          duration: -(start.getTime() / 1000)
+          duration: -(start.getTime() / 1000),
+          tags: timeEntry.tags
         }
       };
     xhr.open("POST", TogglButton.$apiUrl + "/v8/time_entries", true);
