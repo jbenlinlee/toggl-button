@@ -26,7 +26,7 @@ var TogglButton = {
     xhr.send();
   },
 
-  createTimeEntry: function (timeEntry) {
+  createTimeEntry: function (timeEntry, callback) {
     var start = new Date(),
       xhr = new XMLHttpRequest(),
       entry = {
@@ -43,7 +43,20 @@ var TogglButton = {
       };
     xhr.open("POST", TogglButton.$apiUrl + "/v8/time_entries", true);
     xhr.setRequestHeader('Authorization', 'Basic ' + btoa(TogglButton.$user.api_token + ':api_token'));
+    xhr.onload = function() {
+      if (xhr.status === 200) {
+        var resp = JSON.parse(xhr.responseText);
+        callback(resp.data.id);
+      }
+    };
     xhr.send(JSON.stringify(entry));
+  },
+
+  stopEntry: function(toggl_tid) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("PUT", TogglButton.$apiUrl + "/v8/time_entries/" + toggl_tid + "/stop", true);
+    xhr.setRequestHeader('Authorization', 'Basic ' + btoa(TogglButton.$user.api_token + ':api_token'));
+    xhr.send();
   },
 
   newMessage: function (request, sender, sendResponse) {
@@ -53,7 +66,10 @@ var TogglButton = {
       }
       sendResponse({success: TogglButton.$user !== null, user: TogglButton.$user});
     } else if (request.type === 'timeEntry') {
-      TogglButton.createTimeEntry(request);
+      TogglButton.createTimeEntry(request, sendResponse);
+      return true;
+    } else if (request.type === 'stopEntry') {
+      TogglButton.stopEntry(request.toggl_tid);
     }
   }
 
