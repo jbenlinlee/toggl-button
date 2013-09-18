@@ -66,16 +66,30 @@
       selectedProjectId = null;
       selectedProjectBillable = false;
 
-      projectSelect.onchange = function (event) {
-        selectedProjectId = event.target.options[event.target.selectedIndex].value;
-        if (selectedProjectId !== "default") {
-          selectedProjectBillable = userData.projects.filter(function (elem, index, array) {
-            return (elem.id === selectedProjectId);
-          })[0].billable;
-        } else {
-          selectedProjectId = null;
-          selectedProjectBillable = false;
+      // Get Asana projects. Select first toggl project that
+      // matches one of the task's Asana project 
+      var asanaProjects = [];
+      var asanaProjectTokens = document.querySelectorAll("div.property.projects a.token_name");
+      for (var i = 0; i < asanaProjectTokens.length; ++i) {
+        asanaProjects.push(asanaProjectTokens[i].innerHTML);
+      }
+      
+      for (var i = 0; i < projectSelect.options.length; ++i) {
+        var togglPrjName = projectSelect.options[i].getAttribute("data-project-name");
+        for (var j = 0; j < asanaProjects.length; ++j) {
+          if (togglPrjName === asanaProjects[j]) {
+            var prjData = selectedProjectData(projectSelect, userData.projects, i);
+            selectedProjectId = prjData.togglPrjId;
+            selectedProjectBillable = prjData.billable;
+            projectSelect.selectedIndex = i;
+          }
         }
+      }
+
+      projectSelect.onchange = function (event) {
+        var prjData = selectedProjectData(projectSelect, userData.projects, projectSelect.selectedIndex);
+        selectedProjectId = prjData.togglPrjId;
+        selectedProjectBillable = prjData.billable;
       };
 
       taskDescription.parentNode.insertBefore(createTimerLink(), taskDescription.nextSibling);

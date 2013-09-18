@@ -48,7 +48,7 @@ function createProjectSelect(userData, className) {
     select = createTag('select', className);
 
   //add an empty (default) option
-  select.appendChild(createOption("default", null, "Select a toggl project"));
+  select.appendChild(createOption("default", null, "Select a toggl project", "Select a toggl project"));
 
   userData.projects.forEach(function (project) {
     clients = userData.clients.filter(function (elem, index, array) { return (elem.id === project.cid); });
@@ -57,4 +57,18 @@ function createProjectSelect(userData, className) {
   });
 
   return select;
+}
+
+function selectedProjectData(select, projects, idx) {
+  var togglPrjId = select.options[idx].value;
+  var prjBillable = false;
+  if (togglPrjId !== "default") {
+    var matchingProjects = projects.filter(function(elem,idx,arr) { return (elem.id === togglPrjId); });
+    prjBillable = matchingProjects.length > 0 ? matchingProjects[0].billable : false;
+  } else {
+    togglPrjId = null;
+    prjBillable = false;
+  }
+
+  return {togglPrjId: togglPrjId, billable: prjBillable};
 }
