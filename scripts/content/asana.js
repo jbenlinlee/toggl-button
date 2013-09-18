@@ -7,8 +7,6 @@
     selectedProjectId = null, selectedProjectBillable = false,
     tasks = {}, link = null, asanaTidRegex = /app.asana.com\/\d+\/\d+\/(\d+)/;
 
-  var lastUrl = null;
-
   function updateLink() {
     var asana_tid = asanaTidRegex.exec(window.location.href)[1];
     if (link !== null) {
