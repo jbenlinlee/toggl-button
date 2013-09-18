@@ -34,10 +34,11 @@ function createLink(className, tagName, linkHref) {
   return link;
 }
 
-function createOption(id, cid, text) {
+function createOption(id, cid, projectname, text) {
   var option = document.createElement("option");
   option.setAttribute("value", id);
   option.setAttribute("data-client-id", cid);
+  option.setAttribute("data-project-name", projectname);
   option.text = text;
   return option;
 }
@@ -52,7 +53,7 @@ function createProjectSelect(userData, className) {
   userData.projects.forEach(function (project) {
     clients = userData.clients.filter(function (elem, index, array) { return (elem.id === project.cid); });
     projectLabel = (clients.length > 0 ? clients[0].name + " - " : "") + project.name;
-    select.appendChild(createOption(project.id, project.cid, projectLabel));
+    select.appendChild(createOption(project.id, project.cid, project.name, projectLabel));
   });
 
   return select;
