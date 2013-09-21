@@ -35,8 +35,8 @@
                 projectId: selectedProjectId,
                 billable: selectedProjectBillable,
                 tags: tags
-              }, function (toggl_tid) {
-                tasks[asana_tid] = toggl_tid;
+              }, function (toggl_entry) {
+                tasks[asana_tid] = toggl_entry;
                 link.innerHTML = "Stop timer";
               });
 
@@ -47,7 +47,7 @@
       } else {
         chrome.extension.sendMessage({
           type: 'stopEntry',
-          toggl_tid: tasks[asana_tid]
+          toggl_entry: tasks[asana_tid]
         });
 
         link.innerHTML = "Start timer";

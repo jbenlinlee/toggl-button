@@ -46,17 +46,22 @@ var TogglButton = {
     xhr.onload = function() {
       if (xhr.status === 200) {
         var resp = JSON.parse(xhr.responseText);
-        callback(resp.data.id);
+        callback(resp.data);
       }
     };
     xhr.send(JSON.stringify(entry));
   },
 
-  stopEntry: function(toggl_tid) {
+  stopEntry: function(toggl_entry) {
+    var stop = new Date();
+    var start = new Date(toggl_entry.start);
+    var duration = stop.getTime() - start.getTime();
+    var dat = {"time_entry":{"stop":stop.toISOString(),"duration":duration}};
+
     var xhr = new XMLHttpRequest();
-    xhr.open("PUT", TogglButton.$apiUrl + "/v8/time_entries/" + toggl_tid + "/stop", true);
+    xhr.open("PUT", TogglButton.$apiUrl + "/v8/time_entries/" + toggl_entry.id, true);
     xhr.setRequestHeader('Authorization', 'Basic ' + btoa(TogglButton.$user.api_token + ':api_token'));
-    xhr.send();
+    xhr.send(JSON.stringify(dat));
   },
 
   newMessage: function (request, sender, sendResponse) {
@@ -69,7 +74,7 @@ var TogglButton = {
       TogglButton.createTimeEntry(request, sendResponse);
       return true;
     } else if (request.type === 'stopEntry') {
-      TogglButton.stopEntry(request.toggl_tid);
+      TogglButton.stopEntry(request.toggl_entry);
     }
   }
 
