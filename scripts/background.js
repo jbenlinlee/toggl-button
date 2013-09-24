@@ -55,7 +55,7 @@ var TogglButton = {
   stopEntry: function(toggl_entry) {
     var stop = new Date();
     var start = new Date(toggl_entry.start);
-    var duration = stop.getTime() - start.getTime();
+    var duration = (stop.getTime() - start.getTime())/1000;
     var dat = {"time_entry":{"stop":stop.toISOString(),"duration":duration}};
 
     var xhr = new XMLHttpRequest();
