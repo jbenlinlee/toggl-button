@@ -58,7 +58,7 @@
   }
 
   function addButton(e) {
-    if (e.target.className === "details-pane-redesign" || iframeRegex.test(e.target.name)) {
+    if ((e.target.className === "details-pane-redesign" && e.target.id === "right_pane") || iframeRegex.test(e.target.name)) {
       var taskDescription = $(".property.description"),
         projectSelect = createProjectSelect(userData, "toggl-select asana");
 
