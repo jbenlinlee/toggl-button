@@ -58,43 +58,44 @@
   }
 
   function addButton(e) {
-    if (e.target.className === "details-pane-redesign" || iframeRegex.test(e.target.name)) {
-      var taskDescription = $(".property.description"),
-        projectSelect = createProjectSelect(userData, "toggl-select asana");
+    if (!(e.target.className === "details-pane-redesign" || iframeRegex.test(e.target.name))) { return; }
+    if ($(".toggl-select")) { return; }
 
-      //make sure we init the values when switching between tasks
-      selectedProjectId = null;
-      selectedProjectBillable = false;
+    var taskDescription = $(".property.description"),
+      projectSelect = createProjectSelect(userData, "toggl-select asana");
 
-      // Get Asana projects. Select first toggl project that
-      // matches one of the task's Asana project 
-      var asanaProjects = [];
-      var asanaProjectTokens = document.querySelectorAll("div.property.projects a.token_name");
-      for (var i = 0; i < asanaProjectTokens.length; ++i) {
-        asanaProjects.push(asanaProjectTokens[i].innerHTML);
-      }
-      
-      for (var i = 0; i < projectSelect.options.length; ++i) {
-        var togglPrjName = projectSelect.options[i].getAttribute("data-project-name");
-        for (var j = 0; j < asanaProjects.length; ++j) {
-          if (togglPrjName === asanaProjects[j]) {
-            var prjData = selectedProjectData(projectSelect, userData.projects, i);
-            selectedProjectId = prjData.togglPrjId;
-            selectedProjectBillable = prjData.billable;
-            projectSelect.selectedIndex = i;
-          }
+    //make sure we init the values when switching between tasks
+    selectedProjectId = null;
+    selectedProjectBillable = false;
+
+    // Get Asana projects. Select first toggl project that
+    // matches one of the task's Asana project 
+    var asanaProjects = [];
+    var asanaProjectTokens = document.querySelectorAll("div.property.projects a.token_name");
+    for (var i = 0; i < asanaProjectTokens.length; ++i) {
+      asanaProjects.push(asanaProjectTokens[i].innerHTML);
+    }
+    
+    for (var i = 0; i < projectSelect.options.length; ++i) {
+      var togglPrjName = projectSelect.options[i].getAttribute("data-project-name");
+      for (var j = 0; j < asanaProjects.length; ++j) {
+        if (togglPrjName === asanaProjects[j]) {
+          var prjData = selectedProjectData(projectSelect, userData.projects, i);
+          selectedProjectId = prjData.togglPrjId;
+          selectedProjectBillable = prjData.billable;
+          projectSelect.selectedIndex = i;
         }
       }
-
-      projectSelect.onchange = function (event) {
-        var prjData = selectedProjectData(projectSelect, userData.projects, projectSelect.selectedIndex);
-        selectedProjectId = prjData.togglPrjId;
-        selectedProjectBillable = prjData.billable;
-      };
-
-      taskDescription.parentNode.insertBefore(createTimerLink(), taskDescription.nextSibling);
-      taskDescription.parentNode.insertBefore(projectSelect, taskDescription.nextSibling);
     }
+
+    projectSelect.onchange = function (event) {
+      var prjData = selectedProjectData(projectSelect, userData.projects, projectSelect.selectedIndex);
+      selectedProjectId = prjData.togglPrjId;
+      selectedProjectBillable = prjData.billable;
+    };
+
+    taskDescription.parentNode.insertBefore(createTimerLink(), taskDescription.nextSibling);
+    taskDescription.parentNode.insertBefore(projectSelect, taskDescription.nextSibling);
   }
 
   setInterval(function() { updateLink(); }, 500);
